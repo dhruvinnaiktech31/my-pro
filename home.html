@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Happy Propose Day</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Parisienne&family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap">
+
+  <style>
+    :root {
+      --rose: #ff4d6d;
+      --blush: #ff8fa3;
+      --gold: #f9c74f;
+      --deep-gold: #e6a817;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { width: 100%; height: 100%; overflow: hidden; touch-action: none; }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #ff4d6d 0%, #ff758c 30%, #ff85a1 55%, #ffb3c6 80%, #fec3a6 100%);
+      background-size: 400% 400%;
+      animation: bgPulse 8s ease infinite;
+      flex-direction: column;
+      position: relative;
+      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ctext y='28' font-size='28'%3E💕%3C/text%3E%3C/svg%3E") 16 16, auto;
+    }
+    @keyframes bgPulse {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    /* ── Ambient sparkles ── */
+    .ambient-sparkles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .sparkle-dot {
+      position: absolute;
+      background: white; border-radius: 50%;
+      animation: twinkle var(--dur,3s) ease-in-out infinite;
+      animation-delay: var(--delay,0s); opacity: 0;
+    }
+    @keyframes twinkle {
+      0%,100%{opacity:0;transform:scale(0.5);}
+      50%{opacity:0.9;transform:scale(1.5);}
+    }
+
+    /* ── Petal rain ── */
+    .petal-rain { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .petal {
+      position: absolute; top: -30px;
+      font-size: var(--sz,18px);
+      animation: petalFall var(--dur,6s) linear infinite;
+      animation-delay: var(--delay,0s); opacity: 0.8;
+    }
+    @keyframes petalFall {
+      0%  { transform:translateY(-30px) rotate(0deg) translateX(0); opacity:0; }
+      10% { opacity:0.8; }
+      90% { opacity:0.6; }
+      100%{ transform:translateY(110vh) rotate(720deg) translateX(var(--drift,30px)); opacity:0; }
+    }
+
+    /* ── Surprise 2 Button ── */
+    .surprise-btn-wrap {
+      position: absolute;
+      display: flex; flex-direction: column; align-items: center; gap: 5px;
+    }
+    .surprise-btn-label {
+      font-family: 'Parisienne', cursive;
+      font-size: clamp(11px,2.5vw,14px);
+      color: rgba(255,255,255,0.9);
+      text-shadow: 0 1px 6px rgba(0,0,0,0.2);
+      animation: labelFade 2s ease infinite alternate;
+      white-space: nowrap;
+    }
+    @keyframes labelFade { from{opacity:0.5;} to{opacity:1;} }
+    .surprise-btn {
+      font-family: 'Parisienne', cursive;
+      font-size: clamp(15px,4vw,20px);
+      color: #fff;
+      background: linear-gradient(135deg,#c0005e,#ff4d6d,#ff8fa3);
+      border: none;
+      padding: clamp(10px,2.5vw,14px) clamp(22px,6vw,34px);
+      border-radius: 50px; cursor: pointer;
+      box-shadow: 0 4px 20px rgba(192,0,94,0.5);
+      animation: btnPulse 2s ease infinite;
+      transition: transform 0.2s;
+      position: relative; overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .surprise-btn::before {
+      content:''; position:absolute; inset:0;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent);
+      transform:translateX(-100%);
+      animation:shimmer 2.5s ease infinite;
+    }
+    @keyframes shimmer { 0%{transform:translateX(-100%);} 60%,100%{transform:translateX(100%);} }
+    @keyframes btnPulse {
+      0%,100%{box-shadow:0 4px 20px rgba(192,0,94,0.5),0 0 0 0 rgba(255,77,109,0.4);}
+      50%{box-shadow:0 4px 30px rgba(192,0,94,0.7),0 0 0 10px rgba(255,77,109,0);}
+    }
+    .surprise-btn:hover,.surprise-btn:active{transform:scale(1.08);}
+    .surprise-btn span.hearts{margin-left:6px;animation:heartBounce 0.8s ease infinite alternate;display:inline-block;}
+    @keyframes heartBounce{from{transform:scale(1);}to{transform:scale(1.3);}}
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display:none; position:fixed; inset:0;
+      background:rgba(0,0,0,0.75);
+      backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+      z-index:10000;
+      align-items:center; justify-content:center; flex-direction:column;
+      padding:16px;
+      overflow-y:auto; -webkit-overflow-scrolling:touch;
+    }
+    .modal-overlay.active{display:flex; animation:fadeIn 0.4s ease;}
+    @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+    .modal-close {
+      position:fixed; top:14px; right:18px;
+      font-size:clamp(24px,7vw,34px);
+      color:#fff; cursor:pointer; background:none; border:none;
+      z-index:10001; line-height:1;
+      width:44px; height:44px;
+      display:flex; align-items:center; justify-content:center;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .modal-close:active{transform:scale(1.3) rotate(15deg);}
+
+    /* ── Ring Box ── */
+    .ring-scene {
+      perspective:800px;
+      width:clamp(150px,46vw,220px);
+      height:clamp(200px,60vw,280px);
+      position:relative;
+      margin-bottom:clamp(16px,4vw,30px);
+      flex-shrink:0;
+    }
+    .box-body {
+      position:absolute; bottom:0;
+      width:90%; height:clamp(70px,21vw,100px); left:5%;
+      background:linear-gradient(135deg,#1a0a0a,#3d1a1a);
+      border-radius:0 0 14px 14px;
+      box-shadow:0 8px 30px rgba(0,0,0,0.6);
+      overflow:visible;
+    }
+    .box-body::before {
+      content:''; position:absolute;
+      bottom:8px; left:50%; transform:translateX(-50%);
+      width:clamp(50px,16vw,80px); height:clamp(8px,2.5vw,12px);
+      background:linear-gradient(90deg,var(--deep-gold),var(--gold),var(--deep-gold));
+      border-radius:6px;
+    }
+    .box-interior {
+      position:absolute; top:0; inset-inline:4px; height:90%;
+      background:radial-gradient(ellipse at center,#fff0f0 0%,#ffccd5 60%,#ff8fa3 100%);
+      border-radius:0 0 10px 10px;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .ring-holder {
+      width:clamp(40px,13vw,60px); height:clamp(20px,6vw,30px);
+      background:radial-gradient(ellipse at 50% 80%,#e8c5c5 0%,#d4a0a0 100%);
+      border-radius:50%; position:relative; top:18px;
+    }
+    .ring {
+      width:clamp(34px,10vw,46px); height:clamp(34px,10vw,46px);
+      position:absolute;
+      bottom:clamp(42px,13vw,60px);
+      left:50%; transform:translateX(-50%);
+      opacity:0;
+    }
+    .ring-band {
+      width:100%; height:100%; border-radius:50%;
+      border:clamp(5px,1.5vw,7px) solid transparent;
+      background:linear-gradient(#1a0a0a,#1a0a0a) padding-box,
+                 linear-gradient(135deg,#f9c74f,#fff8b0,#e6a817,#fff5a0,#f9c74f) border-box;
+      position:relative;
+    }
+    .ring-gem {
+      position:absolute;
+       top:clamp(-22px,-7vw,-28px); left:50%; transform:translateX(-50%);
+      width:clamp(15px,4.5vw,20px); height:clamp(15px,4.5vw,20px);
+    }
+    .ring-gem::before {
+      content:'💎';
+      font-size:clamp(17px,5vw,22px);
+      position:absolute; top:0; left:50%; transform:translateX(-50%);
+      filter:drop-shadow(0 0 6px #a8d8ff) drop-shadow(0 0 12px #5bc8ff);
+      animation:gemGlow 1.5s ease infinite alternate;
+    }
+    @keyframes gemGlow {
+      from{filter:drop-shadow(0 0 4px #a8d8ff) drop-shadow(0 0 10px #5bc8ff);}
+      to{filter:drop-shadow(0 0 10px #fff) drop-shadow(0 0 20px #a0e8ff) drop-shadow(0 0 30px #5bc8ff);}
+    }
+    .box-lid {
+      position:absolute;
+      top:clamp(42px,13vw,60px); left:5%;
+      width:90%; height:clamp(78px,24vw,110px);
+      background:linear-gradient(135deg,#220c0c,#4a1f1f);
+      border-radius:14px 14px 0 0;
+      transform-origin:bottom center; transform:rotateX(0deg);
+      transition:transform 1.2s cubic-bezier(0.34,1.56,0.64,1);
+      box-shadow:0 -4px 20px rgba(0,0,0,0.5); z-index:2;
+    }
+    .box-lid::after {
+      content:''; position:absolute;
+      bottom:8px; left:50%; transform:translateX(-50%);
+      width:clamp(48px,15vw,70px); height:clamp(7px,2vw,10px);
+      background:linear-gradient(90deg,var(--deep-gold),var(--gold),var(--deep-gold));
+      border-radius:5px;
+    }
+    .box-lid.open{transform:rotateX(-135deg);}
+    .ring.rise{animation:ringRise 1s 1.3s ease forwards;}
+    @keyframes ringRise {
+      from{opacity:0; bottom:clamp(42px,13vw,55px);}
+      to{opacity:1; bottom:clamp(68px,21vw,90px);}
+    }
+    .sparkle-ring-wrap {
+      position:absolute;
+      bottom:clamp(62px,19vw,85px); left:50%; transform:translateX(-50%);
+      width:clamp(88px,27vw,120px); height:clamp(88px,27vw,120px);
+      pointer-events:none; opacity:0;
+      transition:opacity 0.3s 2.2s;
+    }
+    .sparkle-ring-wrap.show{opacity:1;}
+    .sr {
+      position:absolute; font-size:clamp(10px,3vw,14px);
+      animation:srFloat 2s ease-in-out infinite;
+      animation-delay:var(--d,0s);
+    }
+    @keyframes srFloat {
+      0%,100%{transform:translate(var(--tx,0),var(--ty,0)) scale(0.8);opacity:0.6;}
+      50%{transform:translate(var(--tx,0),calc(var(--ty,0) - 8px)) scale(1.2);opacity:1;}
+    }
+
+    /* Proposal text */
+    .proposal-text {
+      text-align:center; color:#fff; opacity:0;
+      transition:opacity 0.8s 2.5s;
+      width:100%; max-width:min(420px,90vw); padding:0 14px;
+    }
+    .proposal-text.show{opacity:1;}
+    .proposal-text h2 {
+      font-family:'Great Vibes',cursive;
+      font-size:clamp(30px,9vw,52px);
+      margin:0 0 10px;
+      text-shadow:0 2px 20px rgba(255,100,130,0.8),0 0 40px rgba(255,255,255,0.3);
+      animation:textPop 0.6s 2.6s cubic-bezier(0.34,1.56,0.64,1) both;
+      line-height:1.2;
+    }
+    @keyframes textPop{from{transform:scale(0.5);opacity:0;}to{transform:scale(1);opacity:1;}}
+    .proposal-text p {
+      font-family:'Cormorant Garamond',serif;
+      font-style:italic;
+      font-size:clamp(13px,3.6vw,18px);
+      line-height:1.7; color:rgba(255,255,255,0.93);
+      text-shadow:0 1px 8px rgba(0,0,0,0.4);
+      margin:0 0 16px;
+    }
+    .yes-btn {
+      font-family:'Parisienne',cursive;
+      font-size:clamp(17px,4.8vw,22px);
+      background:linear-gradient(135deg,var(--gold),#fff5a0,var(--deep-gold));
+      color:#5a0020; border:none;
+      padding:clamp(10px,2.8vw,14px) clamp(26px,7vw,40px);
+      border-radius:50px; cursor:pointer;
+      box-shadow:0 4px 20px rgba(249,199,79,0.6);
+      transition:transform 0.2s;
+      animation:yesGlow 2s ease infinite alternate;
+      -webkit-tap-highlight-color:transparent;
+    }
+    @keyframes yesGlow{
+      from{box-shadow:0 4px 20px rgba(249,199,79,0.5);}
+      to{box-shadow:0 4px 40px rgba(249,199,79,0.9),0 0 60px rgba(255,255,200,0.3);}
+    }
+    .yes-btn:active{transform:scale(1.1);}
+
+    /* ── Papers ── */
+    p {
+      font-family:'Parisienne',cursive;
+      font-size:clamp(17px,4.5vw,32px);
+      color:#880404; user-select:none;
+      font-weight: 400;
+    }
+    .paper {
+      background:linear-gradient(135deg,#fffaf7,#fff4ef);
+      padding:clamp(12px,3.5vw,20px) clamp(16px,7vw,60px);
+      border-radius:15px;
+      box-shadow:2px 12px 24px rgba(180,60,80,0.18),0 2px 6px rgba(255,120,140,0.12);
+      position:absolute; cursor:grab;
+      transition:box-shadow 0.2s ease;
+      border:1.5px solid rgba(255,180,190,0.4);
+      max-width:min(320px,86vw);
+      -webkit-tap-highlight-color:transparent;
+    }
+    .paper::before {
+      content:''; position:absolute; inset:0; border-radius:15px;
+      background:linear-gradient(135deg,rgba(255,255,255,0.6) 0%,transparent 60%);
+      pointer-events:none;
+    }
+    .paper:active{cursor:grabbing; box-shadow:2px 22px 30px rgba(180,60,80,0.28);}
+    .paper.heart {
+      width:clamp(130px,40vw,200px);
+      height:clamp(130px,40vw,200px);
+      padding:0; border-radius:50%;
+    }
+    .paper.heart::after {
+      content:"";
+      background-image:url('https://cdn.pixabay.com/photo/2016/03/31/19/25/cartoon-1294994__340.png');
+      width:100%; height:100%;
+      position:absolute; top:0; left:0;
+      background-size:contain; background-position:center;
+      background-repeat:no-repeat; opacity:0.7;
+    }
+    .paper.image{padding:clamp(8px,2vw,10px);}
+    .paper.image p{font-size:clamp(13px,3.5vw,22px); text-align:center;}
+    img{max-height:clamp(160px,44vw,300px); width:100%; user-select:none; border-radius:8px; display:block;}
+    .quote{
+      font-size:clamp(12px,3.2vw,20px);
+      font-family:'Cormorant Garamond',serif; font-style:italic;
+      color:#710202; margin-top:8px; text-align:center; line-height:1.6;font-weight: 400;
+    }
+
+    /* Floating hearts */
+    .floating-heart {
+      position:fixed;
+      width:clamp(16px,4.5vw,22px); height:clamp(16px,4.5vw,22px);
+      background-image:url('https://cdn.pixabay.com/photo/2016/03/31/19/25/cartoon-1294994__340.png');
+      background-size:cover;
+      animation:floatUp 2.2s ease-in-out forwards;
+      pointer-events:none; z-index:9998;
+    }
+    @keyframes floatUp{
+      0%{opacity:1;transform:translateY(0) scale(1) rotate(0deg);}
+      100%{opacity:0;transform:translateY(-180px) scale(0.6) rotate(30deg);}
+    }
+
+    /* Confetti */
+    .confetti-piece {
+      position:fixed; top:-10px; border-radius:2px;
+      animation:confettiFall var(--dur,3s) linear forwards;
+      animation-delay:var(--delay,0s);
+      pointer-events:none; z-index:99999;
+    }
+    @keyframes confettiFall{
+      0%{opacity:1;transform:translateY(0) rotate(0deg) translateX(0);}
+      100%{opacity:0;transform:translateY(110vh) rotate(720deg) translateX(var(--drift,50px));}
+    }
+
+    /* Hint */
+    .hint-text {
+      position:fixed; bottom:14px; left:50%; transform:translateX(-50%);
+      font-family:'Parisienne',cursive;
+      font-size:clamp(12px,3.2vw,15px);
+      color:rgba(255,255,255,0.82);
+      text-shadow:0 1px 6px rgba(0,0,0,0.2);
+      z-index:10; white-space:nowrap;
+      animation:hintPulse 2.5s ease infinite alternate;
+      pointer-events:none;
+    }
+    @keyframes hintPulse{from{opacity:0.5;}to{opacity:1;}}
+  </style>
+</head>
+<body>
+
+  <div class="ambient-sparkles" id="ambientSparkles"></div>
+  <div class="petal-rain" id="petalRain"></div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="ringModal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="ring-scene" id="ringScene">
+      <div class="ring" id="ring">
+        <div class="ring-band"><div class="ring-gem"></div></div>
+      </div>
+      <div class="sparkle-ring-wrap" id="sparkleRingWrap">
+        <span class="sr" style="--tx:-42px;--ty:-38px;--d:0s">✨</span>
+        <span class="sr" style="--tx:40px;--ty:-40px;--d:0.3s">⭐</span>
+        <span class="sr" style="--tx:-50px;--ty:10px;--d:0.6s">💫</span>
+        <span class="sr" style="--tx:48px;--ty:8px;--d:0.9s">✨</span>
+        <span class="sr" style="--tx:-20px;--ty:-55px;--d:1.2s">🌟</span>
+        <span class="sr" style="--tx:18px;--ty:-52px;--d:0.15s">💎</span>
+      </div>
+      <div class="box-body"><div class="box-interior"><div class="ring-holder"></div></div></div>
+      <div class="box-lid" id="boxLid"></div>
+    </div>
+    <div class="proposal-text" id="proposalText">
+      <h2>Will You Be My Forever? 💍</h2>
+      <p>
+        Every heartbeat of mine whispers your name.<br>
+        Every dream I dream has your smile in it.<br>
+        You are my home, my peace, my greatest adventure.<br><br>
+        I choose you — today, tomorrow, and every day after.<br>
+        With all that I am, I promise to love you endlessly. 🌹
+      </p>
+      <button class="yes-btn" onclick="yesClicked()">Yes, Forever! 💕</button>
+    </div>
+  </div>
+
+  <!-- Heart card (anchor for button) -->
+  <div class="paper heart" id="heartCard"></div>
+
+  <!-- Surprise 2 Button -->
+  <div class="surprise-btn-wrap" id="surpriseBtnWrap">
+    <button class="surprise-btn" onclick="openModal()">
+      Surprise 2 <span class="hearts">💍</span>
+    </button>
+    <span class="surprise-btn-label">tap for a special moment ✨</span>
+  </div>
+
+  <div class="paper">
+    <p class="quote">"Before you say your answer, I want you to know this — you're the most precious part of my life ❤️. I can't picture my life without you 🥹, and all I want is to love you endlessly 💖, cherish every moment with you ✨, and build a beautiful future together 🏡💍. I LOVE YOU !!! Always and forever ❤️💕"</p>
+  </div>
+
+  <div class="paper image">
+    <p>"Will you make me the<br/>happiest person alive?<br/>Will you be mine, forever? 💍❤️"</p>
+    <img src="images/a1.jpeg" alt="">
+  </div>
+  <div class="paper image">
+    <p>"You're my heart, my happiness,<br/>my everything. So,<br/>let me ask you this…"</p>
+    <img src="images/a2.jpeg" alt="">
+  </div>
+  <div class="paper image">
+    <p>"With you, every moment feels<br/>magical. And now, there's just<br/>one moment left to create…"</p>
+    <img src="images/a3.jpeg" alt="">
+  </div>
+  <div class="paper image">
+    <p>"They say love is the most<br/>beautiful journey. I want to walk<br/>every step of it with you,<br/>hand in hand…"</p>
+    <img src="images/a4.jpeg" alt="">
+  </div>
+  <div class="paper image">
+    <p>"I look at you and see a future<br/>filled with laughter, adventure,<br/>and love. And yet, there's a question<br/>waiting to be asked…"</p>
+    <img src="images/a5.jpeg" alt="">
+  </div>
+  <div class="paper image">
+    <p>"Every day, you make my world<br/>brighter, my heart warmer, and<br/>my life more beautiful. But there's<br/>still one thing missing…"</p>
+    <img src="images/a6.jpeg" alt="">
+  </div>
+  <div class="paper image">
+    <p>"I've been meaning to tell you<br/>something... something that's<br/>been on my heart<br/>for a long time. 💖"</p>
+    <img src="images/s7.jpeg" alt="">
+  </div>
+  <div class="paper image">
+    <p>"And the girl with all<br/>the sweetest and<br/>cutest qualities 💖✨"</p>
+    <img src="images/s8.jpeg" alt="">
+  </div>
+  <div class="paper image">
+    <p>"The reason of my happiness 😊❤️"</p>
+    <img src="images/s9.jpeg" alt="">
+  </div>
+  <div class="paper image">
+    <p>"Heyyy!!! The most precious part<br/>of my life ✨❤️"</p>
+    <img src="images/s1.jpeg" alt="">
+  </div>
+  <div class="paper">
+    <p class="quote">Drag the papers and get my love!</p>
+  </div>
+
+  <div class="hint-text">✨ Drag the papers to reveal the love ✨</div>
+
+  <script>
+    /* ── Sparkles ── */
+    const ambientContainer = document.getElementById('ambientSparkles');
+    for (let i = 0; i < 60; i++) {
+      const d = document.createElement('div');
+      d.className = 'sparkle-dot';
+      d.style.left = Math.random() * 100 + 'vw';
+      d.style.top  = Math.random() * 100 + 'vh';
+      d.style.setProperty('--dur',(2+Math.random()*4)+'s');
+      d.style.setProperty('--delay',(Math.random()*4)+'s');
+      const sz=(2+Math.random()*4)+'px';
+      d.style.width=d.style.height=sz;
+      ambientContainer.appendChild(d);
+    }
+
+    /* ── Petals ── */
+    const petalContainer = document.getElementById('petalRain');
+    ['🌸','🌺','🌹','💮','🏵️','🌷'].forEach((emoji, i) => {
+      for (let j = 0; j < 4; j++) {
+        const p = document.createElement('div');
+        p.className = 'petal'; p.textContent = emoji;
+        p.style.left = Math.random()*100+'vw';
+        p.style.setProperty('--sz',(12+Math.random()*14)+'px');
+        p.style.setProperty('--dur',(5+Math.random()*8)+'s');
+        p.style.setProperty('--delay',(Math.random()*8)+'s');
+        p.style.setProperty('--drift',(Math.random()*80-40)+'px');
+        petalContainer.appendChild(p);
+      }
+    });
+
+    /* ── Position heart + button ── */
+    function layoutHeartAndBtn() {
+      const vw = window.innerWidth, vh = window.innerHeight;
+      const heart = document.getElementById('heartCard');
+      const btn   = document.getElementById('surpriseBtnWrap');
+      const heartW = heart.offsetWidth || Math.min(vw*0.40, 200);
+      const heartH = heart.offsetHeight || heartW;
+      // center heart slightly above mid
+      const hTop  = vh/2 - heartH * 0.78;
+      const hLeft = vw/2 - heartW/2;
+      heart.style.top  = Math.max(8, hTop) + 'px';
+      heart.style.left = hLeft + 'px';
+      heart.style.transform = 'rotateZ(-3deg)';
+      // button just below heart
+      btn.style.top  = (parseFloat(heart.style.top) + heartH + 12) + 'px';
+      btn.style.left = vw/2 + 'px';
+      btn.style.transform = 'translateX(-50%)';
+    }
+    layoutHeartAndBtn();
+    window.addEventListener('resize', layoutHeartAndBtn);
+
+    /* ── Modal ── */
+    function openModal() {
+      const modal = document.getElementById('ringModal');
+      modal.classList.add('active');
+      ['boxLid','ring','sparkleRingWrap','proposalText'].forEach(id => {
+        const el = document.getElementById(id);
+        el.classList.remove('open','rise','show');
+        void el.offsetWidth; // reflow
+      });
+      setTimeout(()=>document.getElementById('boxLid').classList.add('open'),600);
+      setTimeout(()=>document.getElementById('ring').classList.add('rise'),1300);
+      setTimeout(()=>document.getElementById('sparkleRingWrap').classList.add('show'),2200);
+      setTimeout(()=>document.getElementById('proposalText').classList.add('show'),2400);
+    }
+    function closeModal(){
+      document.getElementById('ringModal').classList.remove('active');
+    }
+    document.getElementById('ringModal').addEventListener('click', function(e){
+      if(e.target===this) closeModal();
+    });
+
+    function yesClicked(){
+      launchConfetti();
+      const btn=document.querySelector('.yes-btn');
+      btn.textContent='✨ Always & Forever ✨';
+      btn.style.animation='none';
+      btn.style.background='linear-gradient(135deg,#ff4d6d,#ffb3c6,#ff4d6d)';
+      btn.style.color='#fff';
+    }
+
+    function launchConfetti(){
+      const colors=['#ff4d6d','#ffb3c6','#f9c74f','#fff','#ff758c','#fec3a6'];
+      for(let i=0;i<100;i++){
+        const c=document.createElement('div');
+        c.className='confetti-piece';
+        c.style.left=Math.random()*100+'vw';
+        c.style.background=colors[Math.floor(Math.random()*colors.length)];
+        c.style.setProperty('--dur',(2+Math.random()*2)+'s');
+        c.style.setProperty('--delay',(Math.random())+'s');
+        c.style.setProperty('--drift',(Math.random()*200-100)+'px');
+        c.style.width=(6+Math.random()*8)+'px';
+        c.style.height=(6+Math.random()*8)+'px';
+        c.style.borderRadius=Math.random()>0.5?'50%':'2px';
+        document.body.appendChild(c);
+        c.addEventListener('animationend',()=>c.remove());
+      }
+    }
+
+    /* ── Draggable Papers ── */
+    let highestZ = 1;
+
+    class Paper {
+      constructor(el) {
+        this.el = el;
+        this.active = false;
+        this.cx = 0; this.cy = 0;
+        this.rot = Math.random()*28-10;
+        this.el.style.transform = `rotateZ(${this.rot}deg)`;
+        this.bind();
+      }
+      grab(x,y){
+        this.active=true;
+        this.sx=x-this.cx; this.sy=y-this.cy;
+        this.el.style.zIndex=++highestZ;
+        this.el.style.transition='none';
+      }
+      move(x,y){
+        if(!this.active)return;
+        this.cx=x-this.sx; this.cy=y-this.sy;
+        this.el.style.transform=`translate(${this.cx}px,${this.cy}px) rotateZ(${this.rot}deg)`;
+      }
+      release(){
+        if(this.active) this.el.style.transition='box-shadow 0.2s ease';
+        this.active=false;
+      }
+      hearts(x,y){
+        for(let i=0;i<6;i++){
+          const h=document.createElement('div');
+          h.className='floating-heart';
+          h.style.left=`${x+Math.random()*60-30-11}px`;
+          h.style.top=`${y+Math.random()*60-30-11}px`;
+          document.body.appendChild(h);
+          h.addEventListener('animationend',()=>h.remove());
+        }
+      }
+      bind(){
+        // Mouse
+        this.el.addEventListener('mousedown',e=>{
+          if(e.target.tagName==='BUTTON'||e.target.tagName==='A')return;
+          e.preventDefault(); this.grab(e.clientX,e.clientY);
+        });
+        document.addEventListener('mousemove',e=>{this.move(e.clientX,e.clientY);});
+        document.addEventListener('mouseup',()=>this.release());
+        // Touch
+        this.el.addEventListener('touchstart',e=>{
+          if(e.target.tagName==='BUTTON'||e.target.tagName==='A')return;
+          const t=e.touches[0]; this.grab(t.clientX,t.clientY);
+        },{passive:true});
+        document.addEventListener('touchmove',e=>{
+          if(!this.active)return;
+          e.preventDefault();
+          const t=e.touches[0]; this.move(t.clientX,t.clientY);
+        },{passive:false});
+        document.addEventListener('touchend',()=>this.release());
+        // Hearts on tap
+        this.el.addEventListener('click',e=>this.hearts(e.clientX,e.clientY));
+      }
+    }
+
+    document.querySelectorAll('.paper').forEach(p=>new Paper(p));
+  </script>
+</body>
+</html>
